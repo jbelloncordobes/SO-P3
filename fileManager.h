@@ -19,8 +19,8 @@ typedef struct {
     int * fileFinished;
     int * fileAvailable;
 
-    int nFilesRemaining;
-    int nFilesTotal;
+    int nFilesRemaining; // Aquí van los archivos aún por leer o leyendose, el int resultante de hacer open()
+    int nFilesTotal; // Aquí van los terminados por leer, el int resultante de hacer open()
 } FileManager;
 
 void initialiseFdProvider(FileManager * fm, int argc, char **argv);

@@ -26,6 +26,7 @@ void* worker_function(void * arg){
 
 int main(int argc, char ** argv) {
     initialiseFdProvider(&fm, argc, argv);
+    int N = 100; // Temp
     pthread_t threadID[N];
     for (int i = 0; i < N; ++i) {
         pthread_t thread;
