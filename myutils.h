@@ -12,6 +12,11 @@
 #include <string.h>     // also from standard C lib : basic string functions like strlen
 #include <pthread.h>
 
+typedef struct struct_monitor_lock {
+	bool bInUse;                // the ressource is being used?
+	pthread_mutex_t lock;      // lock to use/modify vars
+	pthread_cond_t  cond_free;  // condition for waiters of the ressource
+} monitor_lock;
 
 void startTimer(int i);   // start timer i
 long endTimer(int i);     // returns millis since timer i started
