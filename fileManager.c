@@ -43,7 +43,7 @@ int getAndReserveFile(FileManager *fm, dataEntry * d) {
             d->index = i;
 
             // You should mark that the file is not available 
-            
+            fm->fileAvailable[i] = 0;
 
             return 0;
         }

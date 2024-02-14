@@ -8,13 +8,16 @@
 #include <unistd.h> // for sleep function : waits for seconds
 
 FileManager fm;
+pthread_mutex_t lock;
 
 void* worker_function(void * arg){
     while (1){
         dataEntry  d;
         char * buff[256];
         short int crc;
+        pthread_mutex_lock(&lock);
         int res = getAndReserveFile(&fm, &d); // Reserves a file. The release is missing. Where should you put it?
+        pthread_mutex_unlock(&lock);
         read(d.fdcrc, &crc, sizeof(short int));
         int nBytesReadData = read(d.fddata, buff, 256);
 
