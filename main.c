@@ -9,6 +9,8 @@
 
 FileManager fm;
 pthread_mutex_t lock;
+// my_semaphore sem;
+
 
 void* worker_function(void * arg){
     while (1){
@@ -20,17 +22,22 @@ void* worker_function(void * arg){
         pthread_mutex_unlock(&lock);
         read(d.fdcrc, &crc, sizeof(short int));
         int nBytesReadData = read(d.fddata, buff, 256);
-
+        if (nBytesReadData < 256) {
+            markFileAsFinished(&fm, &d);
+        }
+        unreserveFile(&fm, &d);
         if (crc != crcSlow(buff, nBytesReadData)) {
-            printf("CRC error in file %d\n", d.filename);
+            printf("CRC error in file %s\n", d.filename);
         }
     }
 }
 
 int main(int argc, char ** argv) {
+    // my_sem_init(&sem, 1);
     initialiseFdProvider(&fm, argc, argv);
-    int N = 100; // Temp
+    int N = 10; // Temp
     pthread_t threadID[N];
+    startTimer(0);
     for (int i = 0; i < N; ++i) {
         pthread_t thread;
         pthread_create(&threadID[i], NULL, worker_function, NULL);
@@ -39,5 +46,7 @@ int main(int argc, char ** argv) {
     for (int i = 0; i < N; ++i) {
         pthread_join(threadID[i], NULL);
     }
+    long total_time = endTimer(0);
+    printf("For %d threads the total time is %ld\n", N, total_time);
     destroyFdProvider(&fm);
 }

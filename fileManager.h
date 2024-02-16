@@ -11,7 +11,7 @@ typedef struct {
 } dataEntry;
 
 
-pthread_mutex_t lock;
+//pthread_mutex_t lock; // Da problemas al compilar: /usr/bin/ld: /tmp/cc1e8qPP.o:(.bss+0x0): multiple definition of `lock'; /tmp/ccfupCF9.o:(.bss+0x0): first defined here. collect2: error: ld returned 1 exit status
 
 typedef struct {
     int * fdData;
