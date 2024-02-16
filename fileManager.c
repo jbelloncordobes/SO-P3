@@ -2,10 +2,13 @@
 
 #include <errno.h> // temp
 #include <string.h> // temp
+// my_semaphore sem;
 
 void  initialiseFdProvider(FileManager * fm, int argc, char **argv) {
     // Complete the initialisation
     /* Your rest of the initailisation comes here*/
+    // my_sem_init(&sem,1)
+    // Inicializar semaforo binario 
     fm->nFilesTotal = argc -1;
     fm->nFilesRemaining = fm->nFilesTotal;
     // Initialise enough memory to  store the arrays
@@ -19,8 +22,10 @@ void  initialiseFdProvider(FileManager * fm, int argc, char **argv) {
         char path[100];
         strcpy(path, argv[i]);
         strcat(path, ".crc");
-        fm->fdData[i] = open(argv[i], O_RDONLY);
-        fm->fdCRC[i] = open(path, O_RDONLY);
+        fm->fdData[i-1] = open(argv[i], O_RDONLY);
+        fm->fdCRC[i-1] = open(path, O_RDONLY);
+
+        printf("%d, %d\n");
 
         if (fm->fdData[i] == 0 || fm->fdCRC == 0){
             printf("Couldn't open at least one of the files\n");
@@ -46,6 +51,7 @@ void  destroyFdProvider(FileManager * fm) {
 int getAndReserveFile(FileManager *fm, dataEntry * d) {
     // This function needs to be implemented by the students
     int i;
+    // Semaforo antes del if pero despues del for. Signal antes del return 0 y, por si no entra, despues del if pero antes de terminar el for
     for (i = 0; i < fm->nFilesTotal; ++i) {
         if (fm->fileAvailable[i] && !fm->fileFinished[i]) {
             d->fdcrc = fm->fdCRC[i];
@@ -61,7 +67,9 @@ int getAndReserveFile(FileManager *fm, dataEntry * d) {
     return 1;
 }
 void unreserveFile(FileManager *fm,dataEntry * d) {
+    // sem 
     fm->fileAvailable[d->index] = 1; 
+    // sem
 }
 
 void markFileAsFinished(FileManager * fm, dataEntry * d) {

@@ -38,7 +38,7 @@ void* worker_function(void * arg){
 int main(int argc, char ** argv) {
     // my_sem_init(&sem, 1);
     initialiseFdProvider(&fm, argc, argv);
-    printf("%d - %d | %d - %d\n", fm.fileAvailable[0], fm.fileFinished[0], fm.fdData[0],fm.fdCRC[0]);
+    printf("%d - %d | %d - %d | %d, %d\n", fm.fileAvailable[0], fm.fileFinished[0], fm.fdData[0],fm.fdCRC[0], fm.nFilesRemaining, fm.nFilesTotal);
     // printf("%d - %d | %d\n", fm.fileAvailable[0],fm.fileFinished[0], argc);
     int N = 1;
     pthread_t threadID[N];
