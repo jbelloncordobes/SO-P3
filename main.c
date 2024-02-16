@@ -20,6 +20,9 @@ void* worker_function(void * arg){
         pthread_mutex_lock(&lock);
         int res = getAndReserveFile(&fm, &d); // Reserves a file. The release is missing. Where should you put it?
         pthread_mutex_unlock(&lock);
+        if (res == 1){
+            return;
+        }
         read(d.fdcrc, &crc, sizeof(short int));
         int nBytesReadData = read(d.fddata, buff, 256);
         if (nBytesReadData < 256) {
@@ -35,7 +38,9 @@ void* worker_function(void * arg){
 int main(int argc, char ** argv) {
     // my_sem_init(&sem, 1);
     initialiseFdProvider(&fm, argc, argv);
-    int N = 10; // Temp
+    printf("%d - %d | %d - %d\n", fm.fileAvailable[0], fm.fileFinished[0], fm.fdData[0],fm.fdCRC[0]);
+    // printf("%d - %d | %d\n", fm.fileAvailable[0],fm.fileFinished[0], argc);
+    int N = 1;
     pthread_t threadID[N];
     startTimer(0);
     for (int i = 0; i < N; ++i) {

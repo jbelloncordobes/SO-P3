@@ -1,5 +1,8 @@
 #include "fileManager.h"
 
+#include <errno.h> // temp
+#include <string.h> // temp
+
 void  initialiseFdProvider(FileManager * fm, int argc, char **argv) {
     // Complete the initialisation
     /* Your rest of the initailisation comes here*/
@@ -19,8 +22,15 @@ void  initialiseFdProvider(FileManager * fm, int argc, char **argv) {
         fm->fdData[i] = open(argv[i], O_RDONLY);
         fm->fdCRC[i] = open(path, O_RDONLY);
 
+        if (fm->fdData[i] == 0 || fm->fdCRC == 0){
+            printf("Couldn't open at least one of the files\n");
+            exit(1);
+        }
+
         fm->fileFinished[i] = 0;
         fm->fileAvailable[i] = 1;
+
+        printf("%d - %d | %d - %d | %s\n", fm->fileAvailable[i], fm->fileFinished[i], fm->fdData[i], fm->fdCRC[i], strerror(errno));
     }
 }
 void  destroyFdProvider(FileManager * fm) {
