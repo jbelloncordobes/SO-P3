@@ -1,11 +1,13 @@
 #include "crc.h"
 #include "fileManager.h"
 #include "myutils.h"
-#include <pthread.h>
+//#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h> // for sleep function : waits for seconds
+
+#define N 1
 
 FileManager fm;
 pthread_mutex_t lock;
@@ -17,9 +19,9 @@ void* worker_function(void * arg){
         dataEntry  d;
         char * buff[256];
         short int crc;
-        pthread_mutex_lock(&lock);
+        // pthread_mutex_lock(&lock);
         int res = getAndReserveFile(&fm, &d); // Reserves a file. The release is missing. Where should you put it?
-        pthread_mutex_unlock(&lock);
+        // pthread_mutex_unlock(&lock);
         if (res == 1){
             return;
         }
@@ -29,6 +31,8 @@ void* worker_function(void * arg){
             markFileAsFinished(&fm, &d);
         }
         unreserveFile(&fm, &d);
+        printf("%hd = %hd\n", crc, crcSlow(buff, nBytesReadData));
+        // Cambiar la forma en la que generamos crc en el código de la práctica 1.
         if (crc != crcSlow(buff, nBytesReadData)) {
             printf("CRC error in file %s\n", d.filename);
         }
@@ -38,9 +42,8 @@ void* worker_function(void * arg){
 int main(int argc, char ** argv) {
     // my_sem_init(&sem, 1); 
     initialiseFdProvider(&fm, argc, argv);
-    printf("%d - %d | %d - %d | %d, %d\n", fm.fileAvailable[0], fm.fileFinished[0], fm.fdData[0],fm.fdCRC[0], fm.nFilesRemaining, fm.nFilesTotal);
+    // printf("%d - %d | %d - %d | %d, %d\n", fm.fileAvailable[0], fm.fileFinished[0], fm.fdData[0],fm.fdCRC[0], fm.nFilesRemaining, fm.nFilesTotal);
     // printf("%d - %d | %d\n", fm.fileAvailable[0],fm.fileFinished[0], argc);
-    int N = 1;
     pthread_t threadID[N];
     startTimer(0);
     for (int i = 0; i < N; ++i) {
