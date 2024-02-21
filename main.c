@@ -18,14 +18,14 @@ void* worker_function(void * arg){
     while (1){
         dataEntry  d;
         char * buff[256];
-        short int crc;
+        unsigned short crc;
         // pthread_mutex_lock(&lock);
         int res = getAndReserveFile(&fm, &d); // Reserves a file. The release is missing. Where should you put it?
         // pthread_mutex_unlock(&lock);
         if (res == 1){
             return;
         }
-        read(d.fdcrc, &crc, sizeof(short int));
+        read(d.fdcrc, &crc, sizeof(unsigned short));
         int nBytesReadData = read(d.fddata, buff, 256);
         if (nBytesReadData < 256) {
             markFileAsFinished(&fm, &d);
