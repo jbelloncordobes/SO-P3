@@ -1,7 +1,7 @@
 #include "crc.h"
 #include "fileManager.h"
 #include "myutils.h"
-//#include <pthread.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,14 +27,9 @@ void* worker_function(void * arg){
         }
         read(d.fdcrc, &crc, sizeof(unsigned short));
         int nBytesReadData = read(d.fddata, buff, 256);
-        if (nBytesReadData < 256) {
-            markFileAsFinished(&fm, &d);
-        }
-        unreserveFile(&fm, &d);
-        printf("%hd = %hd\n", crc, crcSlow(buff, nBytesReadData));
-        // Cambiar la forma en la que generamos crc en el código de la práctica 1.
+
         if (crc != crcSlow(buff, nBytesReadData)) {
-            printf("CRC error in file %s\n", d.filename);
+            printf("CRC error in file %d\n", d.filename);
         }
     }
 }
@@ -42,7 +37,7 @@ void* worker_function(void * arg){
 int main(int argc, char ** argv) {
     // my_sem_init(&sem, 1); 
     initialiseFdProvider(&fm, argc, argv);
-    // printf("%d - %d | %d - %d | %d, %d\n", fm.fileAvailable[0], fm.fileFinished[0], fm.fdData[0],fm.fdCRC[0], fm.nFilesRemaining, fm.nFilesTotal);
+    printf("%d - %d | %d - %d | %d, %d\n", fm.fileAvailable[0], fm.fileFinished[0], fm.fdData[0],fm.fdCRC[0], fm.nFilesRemaining, fm.nFilesTotal);
     // printf("%d - %d | %d\n", fm.fileAvailable[0],fm.fileFinished[0], argc);
     pthread_t threadID[N];
     startTimer(0);

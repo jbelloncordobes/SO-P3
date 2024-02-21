@@ -90,8 +90,6 @@ void markFileAsFinished(FileManager * fm, dataEntry * d) {
         printf("All files have been processed\n");
         // while hasta que my_sem_signal(&sem) sea 0
         //TO COMPLETE: unblock all waiting threads, if needed
-        //RAÚL: No entiendo. Cada thread tiene que tener un semaforo? Como desbloqueamos un thread concretamente?
-        //RAÚL: Supongo que será algo de monitores
-        //JAVIER ANTONIO DE LAS ROSAS BELLÓN PABLO CORDOBÉS: Sale un lol
+        
     }
 }
