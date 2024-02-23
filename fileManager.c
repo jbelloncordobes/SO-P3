@@ -88,6 +88,7 @@ void markFileAsFinished(FileManager * fm, dataEntry * d) {
     my_sem_signal(&sem);
     if (fm->nFilesRemaining == 0) {
         printf("All files have been processed\n");
+        pthread_cond_broadcast(&sem.cond);
         // while hasta que my_sem_signal(&sem) sea 0
         //TO COMPLETE: unblock all waiting threads, if needed
         
