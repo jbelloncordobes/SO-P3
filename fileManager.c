@@ -14,12 +14,11 @@ void  initialiseFdProvider(FileManager * fm, int argc, char **argv) {
     fm->fdCRC= malloc(sizeof(int) * fm->nFilesTotal);
     fm->fileFinished = malloc(sizeof(int) * fm->nFilesTotal);
     fm->fileAvailable = malloc(sizeof(int) * fm->nFilesTotal);
-    fm->fileName = malloc(sizeof(char)*fm->nFilesTotal);
+    fm->fileName = malloc(sizeof(char)*50*fm->nFilesTotal);
     for (int i = 0; i < fm->nFilesTotal; i++){
         fm->fileName[i] = malloc(sizeof(char)*50);
     }
-
-    printf("files: %d\n", fm->nFilesTotal);
+    printf("Files: %d\n", fm->nFilesTotal);
     for (int i = 1; i < fm->nFilesTotal +1; ++i) {
         char path[100];
         strcpy(path, argv[i]);
@@ -28,8 +27,13 @@ void  initialiseFdProvider(FileManager * fm, int argc, char **argv) {
         fm->fdCRC[i-1] = open(path, O_RDONLY);
         strcpy(fm->fileName[i-1], argv[i]);
 
-        if (fm->fdData[i-1] < 0 || fm->fdCRC[i-1] < 0){
-            printf("Couldn't open at least one of the files\n");
+        if (fm->fdData[i-1] < 0){
+            printf("Couldn't open the file %s\n", argv[i]);
+            exit(1);
+        }
+
+        if (fm->fdCRC[i-1] < 0){
+            printf("Couldn't open the file %s\n", path);
             exit(1);
         }
 
@@ -53,6 +57,7 @@ int getAndReserveFile(FileManager *fm, dataEntry * d) {
     // This function needs to be implemented by the students
     int i;
     for (i = 0; i < fm->nFilesTotal; ++i) {
+        my_sem_wait(&sem);
         if (fm->fileAvailable[i] && !fm->fileFinished[i]) {
             d->fdcrc = fm->fdCRC[i];
             d->fddata = fm->fdData[i];
@@ -60,12 +65,13 @@ int getAndReserveFile(FileManager *fm, dataEntry * d) {
             d->filename = fm->fileName[i];
             
             // You should mark that the file is not available 
-            my_sem_wait(&sem);
+            
             fm->fileAvailable[i] = 0;
             my_sem_signal(&sem);
             return 0;
         }
-    }             
+    my_sem_signal(&sem);  
+    }           
     return 1;
 }
 void unreserveFile(FileManager *fm,dataEntry * d) {

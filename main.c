@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h> // for sleep function : waits for seconds
 
-#define N 4
+#define N 2
 
 FileManager fm;
 pthread_mutex_t lock;
@@ -26,7 +26,7 @@ void* worker_function(void * arg){
         int nBytesReadData = read(d.fddata, buff, 256);
 
         if (crc != crcSlow(buff, nBytesReadData)) {
-            printf("CRC error in file %d\n", d.filename);
+            printf("CRC error in file %s\n", d.filename);
         }
 
         unreserveFile(&fm, &d);
