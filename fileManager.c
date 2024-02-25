@@ -28,8 +28,6 @@ void  initialiseFdProvider(FileManager * fm, int argc, char **argv) {
         fm->fdCRC[i-1] = open(path, O_RDONLY);
         strcpy(fm->fileName[i-1], argv[i]);
 
-        // printf("%d, %d\n", fm->fdData[i-1], fm->fdCRC[i-1]);
-
         if (fm->fdData[i-1] < 0 || fm->fdCRC[i-1] < 0){
             printf("Couldn't open at least one of the files\n");
             exit(1);
@@ -37,8 +35,6 @@ void  initialiseFdProvider(FileManager * fm, int argc, char **argv) {
 
         fm->fileFinished[i-1] = 0;
         fm->fileAvailable[i-1] = 1;
-
-        // printf("%d - %d | %d - %d\n", fm->fileAvailable[i], fm->fileFinished[i], fm->fdData[i], fm->fdCRC[i]);
     }
 }
 void  destroyFdProvider(FileManager * fm) {
@@ -56,14 +52,13 @@ void  destroyFdProvider(FileManager * fm) {
 int getAndReserveFile(FileManager *fm, dataEntry * d) {
     // This function needs to be implemented by the students
     int i;
-    // Semaforo antes del if pero despues del for. Signal antes del return 0 y, por si no entra, despues del if pero antes de terminar el for
     for (i = 0; i < fm->nFilesTotal; ++i) {
         if (fm->fileAvailable[i] && !fm->fileFinished[i]) {
             d->fdcrc = fm->fdCRC[i];
             d->fddata = fm->fdData[i];
             d->index = i;
             d->filename = fm->fileName[i];
-            //strcpy(d->filename, fm->fileName[i]);
+            
             // You should mark that the file is not available 
             my_sem_wait(&sem);
             fm->fileAvailable[i] = 0;
@@ -74,11 +69,7 @@ int getAndReserveFile(FileManager *fm, dataEntry * d) {
     return 1;
 }
 void unreserveFile(FileManager *fm,dataEntry * d) {
-    // sem 
-    my_sem_wait(&sem);
-    fm->fileAvailable[d->index] = 1; 
-    my_sem_signal(&sem);
-    // sem
+    fm->fileAvailable[d->index] = 1;
 }
 
 void markFileAsFinished(FileManager * fm, dataEntry * d) {
@@ -89,8 +80,6 @@ void markFileAsFinished(FileManager * fm, dataEntry * d) {
     if (fm->nFilesRemaining == 0) {
         printf("All files have been processed\n");
         pthread_cond_broadcast(&sem.cond);
-        // while hasta que my_sem_signal(&sem) sea 0
         //TO COMPLETE: unblock all waiting threads, if needed
-        
     }
 }
