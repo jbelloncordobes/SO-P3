@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h> // for sleep function : waits for seconds
 
-#define N 2
+#define N 4
 
 FileManager fm;
 pthread_mutex_t lock;
@@ -16,7 +16,7 @@ pthread_mutex_t lock;
 void* worker_function(void * arg){
     while (1){
         dataEntry  d;
-        char * buff[256];
+        char * buff[257];
         unsigned short crc;
         int res = getAndReserveFile(&fm, &d); // Reserves a file. The release is missing. Where should you put it?
         if (res == 1){
